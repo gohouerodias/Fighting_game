@@ -7,3 +7,8 @@ I created a todo list to carry out the mini project:
 -attacks ;
 -health bar Interface ;
 -Game timer and game over;
+
+For the interfacing of the game I used assets of which here are the links
+Oak Woods Assets: https://brullov.itch.io/oak-woods 
+Fighter Asset #1: https://luizmelo.itch.io/martial-hero 
+Fighter Asset #2: https://luizmelo.itch.io/martial-hero-2
