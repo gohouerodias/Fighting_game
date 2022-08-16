@@ -146,11 +146,13 @@ function animate() {
     //detect collision
     if (rectangularCollision({ rectangle1: player, rectangle2: ennemy }) && player.isAttacking) {
         player.isAttacking = false
-        document.querySelector('#ennemyHealth').style.width = ennemy.health
+        ennemy.health -= 20
+        document.querySelector('#ennemyHealth').style.width = ennemy.health + '%'
     }
     else if (rectangularCollision({ rectangle1: ennemy, rectangle2: player }) && ennemy.isAttacking) {
         ennemy.isAttacking = false
-        console.log('ennemy Attack successful')
+        player.health -= 20
+        document.querySelector('#playerHealth').style.width = player.health + '%'
     }
 }
 
