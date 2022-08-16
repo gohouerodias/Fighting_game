@@ -9,31 +9,40 @@ c.fillRect(0, 0, canvas.width, canvas.height)
 const gravity = 0.7
 
 class Sprite {
-    constructor({ position, velocity, color = 'red' }) {
+    constructor({ position, velocity, color = 'red', offset }) {
         this.color = color
+        this.health = 100
         this.position = position
         this.velocity = velocity
+        this.width = 50
         this.height = 150
         this.lastKey
         this.attackBox = {
-            position: this.position,
+            position: {
+                x: this.position.x,
+                y: this.position.y
+            }, offset,
             width: 100,
             height: 50,
         }
+        this.isAttacking = false
     }
 
     draw() {
         c.fillStyle = this.color
-        c.fillRect(this.position.x, this.position.y, 50, this.height)
+        c.fillRect(this.position.x, this.position.y, this.width, this.height)
 
         //attack box
-        c.fillStyle = 'blue'
-        c.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height)
+        if (this.isAttacking) {
+            c.fillStyle = 'blue'
+            c.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height)
+        }
     }
 
     update() {
         this.draw()
-
+        this.attackBox.position.x = this.position.x + this.attackBox.offset.x
+        this.attackBox.position.y = this.position.y
         this.position.x += this.velocity.x
         this.position.y += this.velocity.y;
 
@@ -41,6 +50,14 @@ class Sprite {
             this.velocity.y = 0
         } else this.velocity.y += gravity
     }
+
+    attack() {
+        this.isAttacking = true
+        setTimeout(() => {
+            this.isAttacking = false
+        }, 100)
+    }
+
 }
 
 const player = new Sprite({
@@ -48,7 +65,10 @@ const player = new Sprite({
         x: 0,
         y: 0
     },
-    velocity: { x: 0, y: 0 }
+    velocity: { x: 0, y: 0 },
+    offset: {
+        x: 0, y: 0
+    }
 })
 
 
@@ -62,6 +82,10 @@ const ennemy = new Sprite({
     velocity: {
         x: 0, y: 0
     }, color: 'green'
+    , offset: {
+        x: -50,
+        y: 0
+    }
 })
 
 
@@ -83,7 +107,14 @@ const keys = {
     }
 }
 
-
+function rectangularCollision({ rectangle1, rectangle2 }) {
+    return (
+        rectangle1.attackBox.position.x + rectangle1.attackBox.width >= rectangle2.position.x
+        && rectangle1.attackBox.position.x <= rectangle2.position.x + rectangle2.width
+        && rectangle1.attackBox.position.y + rectangle1.attackBox.height >= rectangle2.position.y
+        && rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height
+    )
+}
 
 function animate() {
     window.requestAnimationFrame(animate)
@@ -113,15 +144,19 @@ function animate() {
     }
 
     //detect collision
-    if (player.attackBox.position.x + player.attackBox.width >= ennemy.position.x && player.attackBox.position.x <= ennemy.position.x + ennemy.width) {
-        console.log('touch')
+    if (rectangularCollision({ rectangle1: player, rectangle2: ennemy }) && player.isAttacking) {
+        player.isAttacking = false
+        document.querySelector('#ennemyHealth').style.width = ennemy.health
+    }
+    else if (rectangularCollision({ rectangle1: ennemy, rectangle2: player }) && ennemy.isAttacking) {
+        ennemy.isAttacking = false
+        console.log('ennemy Attack successful')
     }
 }
 
 animate()
 
 window.addEventListener('keydown', (event) => {
-    console.log(event.key)
     switch (event.key) {
         case 'd':
             keys.d.pressed = true
@@ -134,6 +169,10 @@ window.addEventListener('keydown', (event) => {
 
         case 'z':
             player.velocity.y = -20
+            break;
+
+        case ' ':
+            player.attack()
             break;
 
         case 'ArrowRight':
@@ -149,6 +188,9 @@ window.addEventListener('keydown', (event) => {
             ennemy.velocity.y = -20
             break;
 
+        case 'ArrowDown':
+            ennemy.attack()
+            break;
         default:
             break;
     }
