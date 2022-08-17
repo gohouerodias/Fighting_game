@@ -2,7 +2,7 @@
 Well, I wanted to code a fighting game only with javascript.
 I created a todo list to carry out the mini project
 
-fighting gamr mecanics
+fighting game mecanics
 -project Setup ;
 -Create player and ennemy ;
 -Move characters with event listeners ;
